@@ -39,28 +39,28 @@ function AddNewInterview() {
  setJsonResponse(MockJsonResp);
 
 
- if(MockJsonResp){
-  console.log("before insert");
-  const resp=await db.insert(MockInterview).values({
-    mockId:uuidv4(),
-    jsonMockResp:MockJsonResp,
-    jobPosition: jobPosition,
-    jobDesc:jobDesc,
-    jobExperience:jobExperience,
-    createdBy:user?.primaryEmailAddress?.emailAddress,
-    createdAt:moment().format('DD-MM-yyyy'),
-   }).returning('mockId')
-   console.log("before insert");
+//  if(MockJsonResp){
+//   console.log("before insert");
+//   // const resp=await db.insert(MockInterview).values({
+//   //   mockId:uuidv4(),
+//   //   jsonMockResp:MockJsonResp,
+//   //   jobPosition: jobPosition,
+//   //   jobDesc:jobDesc,
+//   //   jobExperience:jobExperience,
+//   //   createdBy:user?.primaryEmailAddress?.emailAddress,
+//   //   createdAt:moment().format('DD-MM-yyyy'),
+//   //  }).returning('mockId')
+//   //  console.log("before insert");
 
-   if (resp && resp.length > 0) {
-    console.log("Inserted ID:", resp[0].mockId);
-  } else {
-    console.error("Insert operation failed.");
-  }
+//    if (resp && resp.length > 0) {
+//     console.log("Inserted ID:", resp[0].mockId);
+//   } else {
+//     console.error("Insert operation failed.");
+//   }
    
- }else{
-  console.log("error");
- }
+//  }else{
+//   console.log("error");
+//  }
 
 
  setLoading(false);
