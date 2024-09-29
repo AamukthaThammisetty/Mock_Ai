@@ -1,8 +1,9 @@
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema';
+import { Logger } from 'sass';
 
-const sql = neon(process.env.NEXT_PUBLIC_DRIZZLE_DB_URL);
-export const db = drizzle(sql,{schema});
+const sql = neon("postgresql://postgres.wvvqfojskfvzrtworcjw:Aamuktha2005@aws-0-ap-south-1.pooler.supabase.com:6543/postgres");
+export const db = drizzle(sql,{schema,logger:true});
 
 
