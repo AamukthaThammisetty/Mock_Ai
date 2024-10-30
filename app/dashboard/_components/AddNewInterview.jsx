@@ -8,10 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../../components/ui/dialog";
-import { v4 as uuidv4 } from 'uuid';
-import moment from 'moment';
-import { MockInterview } from "../../../utils/schema"
-import { db } from "../../../utils/db"
 import { Button } from '../../../components/ui/button';
 import { Input } from "../../../components/ui/input"
 import { Textarea } from "../../../components/ui/textarea";
@@ -19,7 +15,7 @@ import { chatSession } from "../../../utils/GeminiAIModal"
 import { LoaderCircle } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import axios from 'axios';
-
+import pdfToText from 'react-pdftotext'
 
 function AddNewInterview() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -29,11 +25,20 @@ function AddNewInterview() {
   const [loading, setLoading] = useState(false);
   const [JsonResponse, setJsonResponse] = useState([]);
   const { user } = useUser();
+  const [pdfText, setPdfText] = useState("");
+
+  function extractText(event) {
+    const file = event.target.files[0]
+    pdfToText(file)
+      .then(text => setPdfText(text))
+      .catch(error => console.error("Failed to extract text from pdf"))
+  }
 
   // Function to generate the input prompt for the chat session
-  const generateInputPrompt = (jobPosition, jobDesc, jobExperience) => {
-    return `For the position of ${jobPosition}, with the following experience requirements: ${jobExperience}, and job description: ${jobDesc}, generate 5 interview questions. Provide both questions and ideal answers in JSON format, structured as an array of objects with "question" and "answer" fields.`;
+  const generateInputPrompt = (jobPosition, jobDesc, jobExperience, pdfText) => {
+    return `For the position of ${jobPosition}, with the following experience requirements: ${jobExperience}, and job description: ${jobDesc}, as well as the following extracted text from a PDF: ${pdfText}, generate 5 interview questions. Provide both questions and ideal answers in JSON format, structured as an array of objects with "question" and "answer" fields.`;
   };
+
 
   // Function to send prompt and retrieve chat response
   const fetchChatResponse = async (inputPrompt) => {
@@ -44,7 +49,7 @@ function AddNewInterview() {
   // Function to clean and parse JSON response
   const parseResponse = (responseText) => {
     try {
-      const cleanText = responseText.replace(/```json|```/g, ''); // Remove code block markers
+      const cleanText = responseText.replace(/```json|```/g, '');
       return JSON.parse(cleanText); // Parse JSON
     } catch (error) {
       console.error("Failed to parse JSON response:", error);
@@ -67,7 +72,7 @@ function AddNewInterview() {
     e.preventDefault();
     setLoading(true);
 
-    const inputPrompt = generateInputPrompt(jobPosition, jobDesc, jobExperience);
+    const inputPrompt = generateInputPrompt(jobPosition, jobDesc, jobExperience, pdfText);
     const chatResponseText = await fetchChatResponse(inputPrompt);
     const mockJsonResp = parseResponse(chatResponseText);
 
@@ -93,7 +98,7 @@ function AddNewInterview() {
   };
   return (
     <div>
-      <div className='p-10 border rounded-lg bg-secondary hover:scale-105 hover:shadow-md cursor-pointer transition-all'
+      <div className='h-full min-h-24 w-full flex items-center justify-center border rounded-lg bg-secondary hover:scale-105 hover:shadow-md cursor-pointer transition-all'
         onClick={() => setOpenDialog(true)}>
         <h2 className="text-lg text-center">+Add New</h2>
       </div>
@@ -116,6 +121,12 @@ function AddNewInterview() {
                   <div className='my-3 space-y-2'>
                     <label>Years of experience</label>
                     <Input placeholder="Ex.5" type="number" required onChange={(event) => setJobExperience(event.target.value)} />
+                  </div>
+                  <div>
+                    <div className="grid w-full mb-2 items-center gap-1.5">
+                      <label htmlFor="picture">Resume</label>
+                      <Input id="picture" type="file" required onChange={extractText} />
+                    </div>
                   </div>
                 </div>
                 <div className='flex gap-5 justify-end'>

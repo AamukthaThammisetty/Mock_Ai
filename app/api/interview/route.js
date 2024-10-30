@@ -23,3 +23,28 @@ export async function POST(req, res) {
 
   }
 }
+
+
+export async function GET(req, res) {
+  await dbConnect();
+  try {
+    const interviews = await MockInterviewModel.find({});
+    return Response.json(
+      {
+        success: true,
+        data: interviews
+      },
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.log(error.message)
+    return Response.json(
+      {
+        error: error.message
+      },
+      { status: error.status }
+    );
+
+  }
+}
