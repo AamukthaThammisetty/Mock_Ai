@@ -1,9 +1,27 @@
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
-import * as schema from './schema';
-import { Logger } from 'sass';
+import mongoose from 'mongoose';
 
-const sql = neon("postgresql://postgres.wvvqfojskfvzrtworcjw:Aamuktha2005@aws-0-ap-south-1.pooler.supabase.com:6543/postgres");
-export const db = drizzle(sql,{schema,logger:true});
+const connection = {};
 
+async function dbConnect() {
+  // Check if we have a connection to the database or if it's currently connecting
+  if (connection.isConnected) {
+    console.log('Already connected to the database');
+    return;
+  }
 
+  try {
+    // Attempt to connect to the database
+    const db = await mongoose.connect(process.env.MONGODB_URI || '', {});
+
+    connection.isConnected = db.connections[0].readyState;
+
+    console.log('Database connected successfully');
+  } catch (error) {
+    console.error('Database connection failed:', error);
+
+    // Graceful exit in case of a connection error
+    process.exit(1);
+  }
+}
+
+export default dbConnect;

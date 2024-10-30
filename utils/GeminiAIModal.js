@@ -6,7 +6,7 @@ const {
   HarmBlockThreshold,
 } = require("@google/generative-ai");
 
-const apiKey =" AIzaSyB597O10ktDyOxYoYjb_C27In9XSTeVVnw";
+const apiKey = " AIzaSyB597O10ktDyOxYoYjb_C27In9XSTeVVnw";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
@@ -18,13 +18,13 @@ const generationConfig = {
   topP: 0.95,
   topK: 64,
   maxOutputTokens: 8192,
-  responseMimeType: "text/plain",
+  responseMimeType: "application/json"
 };
 
 
- export  const chatSession = model.startChat({
-    generationConfig,
-  });
+export const chatSession = model.startChat({
+  generationConfig,
+});
 
 
 

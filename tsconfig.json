@@ -19,14 +19,16 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "incremental": true,
+    "module": "esnext"
   },
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "app/api/interview/route.js"  ],
   "exclude": [
     "node_modules"
   ]
