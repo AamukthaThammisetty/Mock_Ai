@@ -18,7 +18,7 @@ export const FeedbackAlertsComponent = ({ feedbackItem }) => {
     }
 
     return (
-        <div className={`flex flex-row ${alertClass}`}>
+        <div className={`flex flex-row gap-4 ${alertClass}`}>
             <p>
                 {alertMessage}
             </p>

@@ -19,7 +19,6 @@ const Page = () => {
     try {
       const response = await axios.get(`/api/interview/${id}`);
       setInterviewDetails(response.data.data);
-      console.log(response.data.data);
     } catch (err) {
       setError("Error fetching interview details.");
       console.error("Error fetching interview details:", err);

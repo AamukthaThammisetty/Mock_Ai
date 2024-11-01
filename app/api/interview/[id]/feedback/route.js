@@ -23,6 +23,7 @@ export async function POST(req, { params }) {
 
         // Update score and questions
         interviewData.score = score;
+        interviewData.isCompleted=true;
         questions.forEach((question, index) => {
             if (interviewData.questions[index]) {
                 interviewData.questions[index].score = question.score;

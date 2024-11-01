@@ -32,6 +32,9 @@ const MockInterviewSchema = new Schema({
       score: { type: Number },
     }
   ],
+  score:{
+    type:Number
+  },
   isCompleted:{
     type:Boolean,
     default:false

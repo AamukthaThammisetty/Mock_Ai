@@ -9,9 +9,11 @@ import { Button } from '../../../../components/ui/button';
 import toast from "react-hot-toast";
 import {CircleCheckBig} from "lucide-react";
 import {chatSession} from "../../../../utils/GeminiAIModal";
+import {useRouter} from "next/navigation";
 
 const Page = () => {
   const { id } = useParams();
+  const router=useRouter();
   const [interviewDetails, setInterviewDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [webcamEnabled, setWebcamEnabled] = useState(false);
@@ -112,6 +114,7 @@ const Page = () => {
 
       if (response.data.success) {
         toast.success("Feedback generated successfully")
+        router.push(`/interview/${id}/feedback`);
         return null;
       } else {
         console.error('Error submitting feedback:', response.data.error);
@@ -151,6 +154,7 @@ const Page = () => {
       const response=result.response.text();
       const responseJson=JSON.parse(response);
       await submitFeedback(id,responseJson.score,responseJson.questions);
+
     } catch (error) {
       console.error("Error requesting feedback:", error);
       return null;

@@ -1,34 +1,35 @@
 'use client'
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {FeedbackAlertsComponent} from "./_components/feedbackAlert";
+import {useParams} from "next/navigation";
+import axios from "axios";
 
 const FeedbackComponent = () => {
-    // Sample feedback data
-    const feedbackData = [
-        {
-            question: 'How would you rate your experience?',
-            answer: 'I found the session very informative.',
-            userAnswer: 'I would rate it a 5 out of 5.',
-            feedback: 'Great job! Keep up the good work.',
-            score: 5,
-        },
-        {
-            question: 'What could be improved?',
-            answer: 'More examples could enhance understanding.',
-            userAnswer: 'I would suggest more interactive elements.',
-            feedback: 'Thank you for your input!',
-            score: 3,
-        },
-        {
-            question: 'Would you recommend this to others?',
-            answer: 'It was not very helpful.',
-            userAnswer: 'I would not recommend it.',
-            feedback: 'Needs significant improvement.',
-            score: 1,
-        },
-        // Add more feedback items as needed
-    ];
+    const [feedbackData,setFeedBackData]=useState([]);
+    const [overallScore,setOverallScore]=useState(0);
+    const [loading,setLoading]=useState(false);
 
+    const { id } = useParams();
+    // Sample feedback data
+
+    // Fetch interview details from API
+        const getInterviewDetails = async () => {
+            try {
+                const response = await axios.get(`/api/interview/${id}`);
+                const interview=response.data.data;
+                setFeedBackData(interview.questions);
+                setOverallScore(interview.score);
+            } catch (err) {
+                setError("Error fetching interview details.");
+                console.error("Error fetching interview details:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        useEffect(() => {
+            getInterviewDetails();
+        }, [id]);
 
     const [openIndex, setOpenIndex] = useState(null);
 
@@ -40,14 +41,14 @@ const FeedbackComponent = () => {
         <div id="accordion-collapse" className="mx-auto p-8 flex flex-col items-start w-full  rounded-lg  ">
             <h2 className="text-3xl font-bold mb-6 text-center text-blue-600">Congratulations!</h2>
             <h3 className="text-lg text-gray-700 mb-2 text-center">Here is your interview feedback</h3>
-            <p className="text-center text-gray-600 mb-4">Your overall interview rating: <span className="font-bold text-blue-500">7/10</span></p>
+            <p className="text-center text-gray-600 mb-4">Your overall interview rating: <span className="font-bold text-blue-500">{overallScore}/10</span></p>
             <p className="text-center text-gray-600 mb-8">Find below the interview questions with correct answers, your answers, and suggestions to improve.</p>
             {feedbackData.map((item, index) => (
                 <div key={index} className="mb-4 w-full">
                     <h2 id={`accordion-collapse-heading-${index}`}>
                         <button
                             type="button"
-                            className="flex items-center justify-between w-full p-4 font-medium text-gray-700  rounded-lg transition-colors duration-200 border border-gray-300 shadow-sm gap-3"
+                            className="flex items-center text-start justify-between w-full p-4 font-medium text-gray-700  rounded-lg transition-colors duration-200 border border-gray-300 shadow-sm gap-3"
                             onClick={() => toggleAccordion(index)}
                             aria-expanded={openIndex === index}
                             aria-controls={`accordion-collapse-body-${index}`}
@@ -75,6 +76,10 @@ const FeedbackComponent = () => {
                             <p className="text-gray-700">{item.userAnswer}</p>
                             <p className="font-semibold text-blue-600 mt-4">Feedback:</p>
                             <FeedbackAlertsComponent feedbackItem={item} />
+                            <div>
+                                <p className={"font-semibold text-blue-600"}>Probable Answer</p>
+                                {item.answer}
+                            </div>
                             <p className="font-semibold text-blue-600 mt-4">Score: <span className="text-gray-800">{item.score}</span></p>
                         </div>
                     </div>
