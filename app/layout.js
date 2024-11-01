@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs"
 import Header from "./dashboard/_components/Header";
+import { Toaster } from "react-hot-toast";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <Header />
+          <div><Toaster /></div>
           <div className='mx-5 md:mx-20 lg:mx-36'>
             {children}
 
