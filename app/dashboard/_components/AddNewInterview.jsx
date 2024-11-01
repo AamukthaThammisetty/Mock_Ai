@@ -16,8 +16,9 @@ import { LoaderCircle } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import axios from 'axios';
 import pdfToText from 'react-pdftotext'
+import toast from 'react-hot-toast';
 
-function AddNewInterview() {
+function AddNewInterview({ addToServer }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [jobPosition, setJobPosition] = useState();
   const [jobDesc, setJobDesc] = useState();
@@ -57,15 +58,6 @@ function AddNewInterview() {
     }
   };
 
-  // Function to send data to the server
-  const submitToServer = async (data) => {
-    try {
-      const response = await axios.post("/api/interview", data);
-      console.log("Insert successful:", response.data);
-    } catch (error) {
-      console.error("Submission failed:", error);
-    }
-  };
 
   // Main submit function triggered by form submission
   const onSubmit = async (e) => {
@@ -89,7 +81,13 @@ function AddNewInterview() {
         questions: mockJsonResp,
       };
 
-      await submitToServer(data);
+      await addToServer(data);
+      toast.success("created successfully");
+      setOpenDialog(false);
+      setJobPosition('');
+      setJobDesc('');
+      setJobExperience('');
+
     } else {
       console.error("Failed to generate questions.");
     }
