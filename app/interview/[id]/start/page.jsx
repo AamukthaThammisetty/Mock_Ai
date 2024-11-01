@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "../../../../components/ui/a
 import { Button } from '../../../../components/ui/button';
 import toast from "react-hot-toast";
 import {CircleCheckBig} from "lucide-react";
+import {chatSession} from "../../../../utils/GeminiAIModal";
 
 const Page = () => {
   const { id } = useParams();
@@ -20,6 +21,7 @@ const Page = () => {
   const [recording, setRecording] = useState(false);
   const [completedQuestions, setCompletedQuestions] = useState(new Set());
   const [readyForFeedback,setReadyForFeedBack]=useState(false);
+  const [generatingFeedback,setGeneratingFeedback]=useState(false);
 
   useEffect(() => {
     if (completedQuestions.size === questions.length) {
@@ -100,6 +102,63 @@ const Page = () => {
   useEffect(() => {
     getInterviewDetails();
   }, [getInterviewDetails]);
+
+  const submitFeedback = async (id, score, questions) => {
+    try {
+      const response = await axios.post(`/api/interview/${id}/feedback`, {
+        score,
+        questions,
+      });
+
+      if (response.data.success) {
+        toast.success("Feedback generated successfully")
+        return null;
+      } else {
+        console.error('Error submitting feedback:', response.data.error);
+        return null;
+      }
+    } catch (error) {
+      console.error('An error occurred while submitting feedback:', error);
+      return null;
+    }
+  };
+
+
+  const requestFeedBack = async () => {
+    if (!readyForFeedback) {
+      return;
+    }
+
+    // Build a prompt with specific instructions
+    const inputPrompt = `Below are interview questions and user-provided answers. 
+      Please provide feedback to the user with a score for each question, along with an overall score. 
+      
+      Questions and User Responses:
+      ${questions.map((q, index) => `Q${index + 1}: ${q.question} \nAnswer: ${q.userAnswer}`).join("\n\n")}
+      
+      Format the output as follows:
+      {
+          score: Overall score as a number,
+          questions: [
+              { score: "Score for the question", feedback: "Feedback for the answer" }
+          ]
+      }`;
+
+
+    try {
+      setGeneratingFeedback(true);
+      const result = await chatSession.sendMessage(inputPrompt);
+      const response=result.response.text();
+      const responseJson=JSON.parse(response);
+      await submitFeedback(id,responseJson.score,responseJson.questions);
+    } catch (error) {
+      console.error("Error requesting feedback:", error);
+      return null;
+    }finally {
+      setGeneratingFeedback(false);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -184,7 +243,8 @@ const Page = () => {
               {webcamEnabled ? <Video /> : <VideoOff />}
             </Button>
             {readyForFeedback ?
-                <Button className="bg-green-600 hover:bg-green-500 mt-4 flex items-center gap-2">Get Feedback</Button>:
+                <Button onClick={requestFeedBack} className="bg-green-600 hover:bg-green-500 mt-4 flex items-center gap-2">
+                  {generatingFeedback ? <span className={"flex items-center gap-3"}> <LoaderCircle className={"animate-spin"}/> Generating Feedback</span>:<>Get Feedback</>}</Button>:
                 <Button
                     onClick={recording ? stopRecording : startRecording}
                     variant={recording ? 'destructive' : ''}
