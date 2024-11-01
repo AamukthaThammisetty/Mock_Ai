@@ -25,11 +25,17 @@ const MockInterviewSchema = new Schema({
   questions: [
     {
       question: { type: String, required: true },
+      isAttempted:{type:Boolean,default: false},
       answer: { type: String },
       userAnswer: { type: String },
+      feedback:{type:String},
       score: { type: Number },
     }
   ],
+  isCompleted:{
+    type:Boolean,
+    default:false
+  }
 });
 
 const MockInterviewModel = mongoose.models.MockInterview || mongoose.model('MockInterview', MockInterviewSchema);

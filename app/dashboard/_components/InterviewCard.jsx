@@ -34,7 +34,7 @@ export function InterviewCard({ jobDetails, onDelete }) {
   };
 
   return (
-    <Card className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 ease-in-out">
+    <Card className="bg-white h-auto shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 ease-in-out">
       <CardHeader className="p-4 bg-gray-100 relative">
         <div className="right-2 justify-end absolute">
           <Button

@@ -5,6 +5,7 @@ import MockInterviewModel from '../../../../models/InterviewModel'
 export async function GET(req, { params }) {
   await dbConnect();
   try {
+
     const id = params.id;
     console.log(id);
     const interviewData = await MockInterviewModel.findById(id);

@@ -6,6 +6,8 @@ import Webcam from 'react-webcam';
 import { LoaderCircle, AlertCircle, Mic, StopCircle, Video, VideoOff, Check } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "../../../../components/ui/alert";
 import { Button } from '../../../../components/ui/button';
+import toast from "react-hot-toast";
+import {CircleCheckBig} from "lucide-react";
 
 const Page = () => {
   const { id } = useParams();
@@ -17,6 +19,14 @@ const Page = () => {
   const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
   const [recording, setRecording] = useState(false);
   const [completedQuestions, setCompletedQuestions] = useState(new Set());
+  const [readyForFeedback,setReadyForFeedBack]=useState(false);
+
+  useEffect(() => {
+    if (completedQuestions.size === questions.length) {
+      setReadyForFeedBack(true);
+    }
+  }, [completedQuestions, questions.length]);
+
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = new SpeechRecognition();
@@ -30,8 +40,18 @@ const Page = () => {
       .map(result => result[0].transcript)
       .join("");
     console.log("Transcript:", transcript);
-    setCompletedQuestions(prev => new Set(prev).add(selectedQuestionIndex));
+    setCompletedQuestions(prev => new Set(prev).add(questions[selectedQuestionIndex]._id));
+    setQuestionAttempted(selectedQuestionIndex,transcript);
   };
+
+  const setQuestionAttempted=async (questionIndex, userAnswer) => {
+    try{
+      await axios.put(`/api/interview/${id}/question/${questionIndex}`, {userAnswer});
+    }catch(error){
+      toast.error("Error Saving answer");
+      console.error(error.message);
+    }
+  }
 
   recognition.onerror = (event) => {
     console.error("Speech recognition error:", event.error);
@@ -61,8 +81,14 @@ const Page = () => {
     try {
       const response = await axios.get(`/api/interview/${id}`);
       const { data } = response.data;
+      console.log(data);
       setInterviewDetails(data);
+
       setQuestions(data.questions || []);
+      const completedQuestionsArray = data.questions.filter(question => question.isAttempted);
+      const completedQuestionsSet = new Set(completedQuestionsArray.map(question => question._id));
+      setCompletedQuestions(completedQuestionsSet);
+      console.log(completedQuestionsSet);
     } catch (err) {
       setError("Error fetching interview details.");
       console.error("Error fetching interview details:", err);
@@ -94,33 +120,40 @@ const Page = () => {
           <div className="space-y-4">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">Interview Questions</h3>
             <div className="flex items-center flex-wrap gap-2">
-              {questions.map((_, index) => (
+              {questions.map((question, index) => (
                 <Button
-                  key={index}
+                  key={question._id}
                   onClick={() => setSelectedQuestionIndex(index)}
+                  disabled={completedQuestions.has(question._id)}
                   variant={selectedQuestionIndex === index ? '' : 'outline'}
-                  className={`text-left ${completedQuestions.has(index) ? 'bg-green-500 text-white' : ''}`}
+                  className={`text-left ${completedQuestions.has(question._id) ? 'bg-green-500 text-white' : ''}`}
                 >
                   Question #{index + 1}
                   {completedQuestions.has(index) && <Check className="ml-1 w-4 h-4" />}
                 </Button>
               ))}
             </div>
+            {
+              readyForFeedback ? <div className={"w-full h-40 flex flex-col gap-4 items-center justify-center"}>
+                <CircleCheckBig size={60} className={"text-white bg-green-600 p-3 rounded-full"}
+                />
+                <p>All questions done. Go and check the feedback</p>
+              </div> : <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+                <h4 className="font-bold text-gray-800">Question:</h4>
+                <p className="text-gray-700">{questions[selectedQuestionIndex]?.question}</p>
+              </div>
+            }
 
-            <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-              <h4 className="font-bold text-gray-800">Question:</h4>
-              <p className="text-gray-700">{questions[selectedQuestionIndex]?.question}</p>
-            </div>
-
-            <Alert className="mt-6 flex items-start space-x-2">
-              <AlertCircle className="h-5 w-5 text-blue-500" />
+            {!readyForFeedback &&  <Alert className="mt-6 flex items-start space-x-2">
+              <AlertCircle className="h-5 w-5 text-blue-500"/>
               <div>
                 <AlertTitle>Note</AlertTitle>
                 <AlertDescription>
                   Click "Record" to answer. Feedback with correct answers will be provided after the interview.
                 </AlertDescription>
               </div>
-            </Alert>
+            </Alert>}
+
 
             {completedQuestions.has(selectedQuestionIndex) && (
               <Button onClick={retakeQuestion} variant="outline" className="mt-4">
@@ -150,14 +183,19 @@ const Page = () => {
             >
               {webcamEnabled ? <Video /> : <VideoOff />}
             </Button>
-            <Button
-              onClick={recording ? stopRecording : startRecording}
-              variant={recording ? 'destructive' : ''}
-              className={`mt-4 flex items-center gap-2`}
-            >
-              {recording ? <StopCircle className="w-5 h-5 animate-pulse" /> : <Mic className="w-5 h-5" />}
-              {recording ? 'Stop Recording' : 'Record Answer'}
-            </Button>
+            {readyForFeedback ?
+                <Button className="bg-green-600 hover:bg-green-500 mt-4 flex items-center gap-2">Get Feedback</Button>:
+                <Button
+                    onClick={recording ? stopRecording : startRecording}
+                    variant={recording ? 'destructive' : ''}
+                    disabled={completedQuestions.has(questions[selectedQuestionIndex]._id)}
+                    className={`mt-4 flex items-center gap-2`}
+                >
+                  {recording ? <StopCircle className="w-5 h-5 animate-pulse" /> : <Mic className="w-5 h-5" />}
+                  {recording ? 'Stop Recording' : 'Record Answer'}
+                </Button>
+            }
+
           </div>
         </div>
       ) : (

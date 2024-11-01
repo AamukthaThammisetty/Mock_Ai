@@ -60,7 +60,7 @@ function Dashboard() {
         ) : (
           interviews.length > 0 ? (
             interviews.map((interview, index) => (
-              <div key={index} className="w-full"> {/* Added width handling */}
+              <div key={index} className="w-full h-full"> {/* Added width handling */}
                 <InterviewCard jobDetails={interview} onDelete={deleteInterview} />
               </div>
             ))
