@@ -22,16 +22,13 @@ export function InterviewCard({ jobDetails, onDelete }) {
     router.push(`/interview/${_id}`);
   };
 
-  const deleteInterview = async (_id) => {
-    try {
-      await axios.delete(`/api/interview/${_id}`);
-      toast.success("Deleted successfully.");
-      router.refresh(); // Refreshes the page to show updated data after deletion
-    } catch (error) {
-      console.error("Error deleting interview:", error);
-      alert("Failed to delete the interview.");
+  const getFeedBack=(_id)=>{
+    if(jobDetails.isCompleted===true){
+      router.push(`/interview/${_id}/feedback`);
+    }else {
+      toast.error('Start the interview')
     }
-  };
+  }
 
   return (
     <Card className="bg-white h-auto shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 ease-in-out">
@@ -54,7 +51,10 @@ export function InterviewCard({ jobDetails, onDelete }) {
         </CardDescription>
       </CardHeader>
       <CardFooter className="flex w-full justify-between p-2 gap-2 bg-gray-100">
-        <Button variant="outline" className="text-gray-700 w-full hover:bg-gray-200">
+        <Button
+            onClick={()=>getFeedBack(jobDetails._id)}
+            variant="outline"
+            className="text-gray-700 w-full hover:bg-gray-200">
           Feedback
         </Button>
         <Button
