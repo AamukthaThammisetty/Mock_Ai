@@ -45,7 +45,7 @@ const Page = () => {
 
   useEffect(()=>{
     if(questions.length!=0){
-      if(completedQuestions.has(questions[selectedQuestionIndex]._id)){
+      if(completedQuestions.has(questions[selectedQuestionIndex]._id) && completedQuestions.size!==questions.length ){
         setSelectedQuestionIndex((selectedQuestionIndex+1)%questions.length);
       }
     }
