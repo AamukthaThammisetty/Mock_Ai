@@ -29,7 +29,8 @@ export async function POST(req, res) {
 export async function GET(req, res) {
   await dbConnect();
   try {
-    const {userId} = auth()
+    const headers = await req.headers;
+    const {userId} = await auth()
     const user = await currentUser();
     const email = user.emailAddresses[0]?.emailAddress;
     console.log(email);

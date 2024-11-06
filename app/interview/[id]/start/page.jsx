@@ -154,6 +154,11 @@ const Page = () => {
   const requestFeedBack = async () => {
     if (!readyForFeedback) return;
 
+    if(interviewDetails.isCompleted===true){
+      router.push(`/interview/${id}/feedback`);
+      return;
+    }
+
     const inputPrompt = `Below are interview questions and user-provided answers. 
       Please provide feedback to the user with a score for each question, along with an overall score. 
       
