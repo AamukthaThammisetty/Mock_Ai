@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import axios from 'axios'
 import Webcam from 'react-webcam'
-import { LoaderCircle, WebcamIcon, AlertCircle } from 'lucide-react'
+import { LoaderCircle, WebcamIcon, AlertCircle,MoveRight } from 'lucide-react'
 import { Button } from '../../../components/ui/button'
 import { Alert, AlertDescription, AlertTitle } from "../../../components/ui/alert"
+import Layout from '../../../components/Layout'
+import {useRouter} from "next/navigation";
 
 const Page = () => {
   const { id } = useParams();
@@ -13,6 +15,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [webcamEnable, setWebCamEnable] = useState(false);
   const [error, setError] = useState(null);
+  const router=useRouter();
 
   // Fetch interview details from API
   const getInterviewDetails = async () => {
@@ -31,6 +34,10 @@ const Page = () => {
     getInterviewDetails();
   }, [id]);
 
+  const startInterview=()=>{
+    router.push(`/interview/${id}/start`);
+  }
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -44,6 +51,7 @@ const Page = () => {
   }
 
   return (
+      <Layout>
     <div className="p-6  grid place-items-center">
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Let's Get Started</h2>
       {interviewDetails ? (
@@ -89,6 +97,12 @@ const Page = () => {
                 <Button onClick={() => setWebCamEnable(true)} className="w-full">
                   Enable Webcam and Microphone
                 </Button>
+                <div>
+                  <Button className={"space-x-2"} onClick={startInterview}>
+                    <span>  Start interview</span>
+                   <MoveRight />
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -98,6 +112,7 @@ const Page = () => {
         <p className="text-gray-600">No details available for this interview.</p>
       )}
     </div>
+      </Layout>
   );
 }
 

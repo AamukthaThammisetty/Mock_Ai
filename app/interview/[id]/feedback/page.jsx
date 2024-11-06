@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {FeedbackAlertsComponent} from "./_components/feedbackAlert";
 import {useParams} from "next/navigation";
 import axios from "axios";
+import  Layout from '../../../../components/Layout'
 
 const FeedbackComponent = () => {
     const [feedbackData,setFeedBackData]=useState([]);
@@ -38,6 +39,7 @@ const FeedbackComponent = () => {
     };
 
     return (
+        <Layout>
         <div id="accordion-collapse" className="mx-auto p-8 flex flex-col items-start w-full  rounded-lg  ">
             <h2 className="text-3xl font-bold mb-6 text-center text-blue-600">Congratulations!</h2>
             <h3 className="text-lg text-gray-700 mb-2 text-center">Here is your interview feedback</h3>
@@ -86,6 +88,7 @@ const FeedbackComponent = () => {
                 </div>
             ))}
         </div>
+        </Layout>
     );
 
 };

@@ -5,10 +5,15 @@ import AddNewInterview from './_components/AddNewInterview'
 import { InterviewCard } from './_components/InterviewCard'
 import { LoaderCircle } from 'lucide-react';
 import toast from 'react-hot-toast'
+import Layout from "../../components/Layout";
+import {useUser} from "@clerk/nextjs";
+import {useRouter} from "next/navigation";
 
 function Dashboard() {
   const [interviews, setInterviews] = useState([]);
-  const [loading, setLoading] = useState(true); // State to handle loading
+  const [loading, setLoading] = useState(true);
+  const { isSignedIn } = useUser();
+  const router=useRouter();
 
   // Fetch interviews from an API
   const getInterviews = async () => {
@@ -46,7 +51,9 @@ function Dashboard() {
     getInterviews();
   }, []);
 
+
   return (
+      <Layout>
     <div className='p-10'>
       <h2 className='font-bold text-2xl mb-2'>Dashboard</h2>
       <h2 className='text-gray-500 mb-5'>Create and start your AI Mockup Interview</h2>
@@ -72,6 +79,7 @@ function Dashboard() {
         )}
       </div>
     </div>
+      </Layout>
   );
 }
 
