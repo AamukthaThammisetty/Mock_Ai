@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,6 @@ import { Textarea } from "../../../components/ui/textarea";
 import { chatSession } from "../../../utils/GeminiAIModal"
 import { LoaderCircle } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
-import axios from 'axios';
 import pdfToText from 'react-pdftotext'
 import toast from 'react-hot-toast';
 

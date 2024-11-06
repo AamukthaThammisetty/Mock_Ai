@@ -13,7 +13,7 @@ function Dashboard() {
   // Fetch interviews from an API
   const getInterviews = async () => {
     try {
-      const response = await axios.get('/api/interview');
+      const response = await axios.get(`/api/interview/`);
       setInterviews(response.data.data || []); // Default to empty array if no data
     } catch (error) {
       console.error("Error fetching interviews:", error);
