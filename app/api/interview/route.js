@@ -1,6 +1,7 @@
 import dbConnect from "../../../utils/db";
 import MockInterviewModel from '../../../models/InterviewModel'
-import {auth, currentUser} from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
 
 
 export async function POST(req, res) {
@@ -26,15 +27,15 @@ export async function POST(req, res) {
 }
 
 
-export async function GET(req, res) {
+export async function GET({ params, headers }) {
   await dbConnect();
   try {
-    const headers = await req.headers;
-    const {userId} = await auth()
+    await headers();
+    const { userId } = auth()
     const user = await currentUser();
     const email = user.emailAddresses[0]?.emailAddress;
     console.log(email);
-    const interviews = await MockInterviewModel.find({createdBy:email});
+    const interviews = await MockInterviewModel.find({ createdBy: email });
     return Response.json(
       {
         success: true,

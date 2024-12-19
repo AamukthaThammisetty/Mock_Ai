@@ -4,8 +4,8 @@ import MockInterviewModel from '../../../../../models/InterviewModel';
 export async function POST(req, { params }) {
     await dbConnect();
     try {
-        const id = params.id;
-        const data=await req.json();
+        const { id } = await params
+        const data = await req.json();
         const { score, questions } = data;
 
         console.log(questions);
@@ -23,7 +23,7 @@ export async function POST(req, { params }) {
 
         // Update score and questions
         interviewData.score = score;
-        interviewData.isCompleted=true;
+        interviewData.isCompleted = true;
         questions.forEach((question, index) => {
             if (interviewData.questions[index]) {
                 interviewData.questions[index].score = question.score;

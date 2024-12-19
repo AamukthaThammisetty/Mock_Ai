@@ -7,10 +7,11 @@ export async function PUT(req, { params }) {
     try {
 
         console.log(params);
-        const { id, questionId } = params;
+
+        const { id, questionId } = await params;
         const { userAnswer } = await req.json();
         const interview = await MockInterviewModel.findById(id);
-        if (!interview){
+        if (!interview) {
             return Response.json(
                 {
                     success: false,
