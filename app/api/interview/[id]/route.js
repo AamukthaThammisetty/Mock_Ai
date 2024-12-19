@@ -5,8 +5,8 @@ import MockInterviewModel from '../../../../models/InterviewModel'
 export async function GET(req, { params }) {
   await dbConnect();
   try {
-
-    const id = params.id;
+      const headers = await req.headers;
+      const { id } = await params
     console.log(id);
     const interviewData = await MockInterviewModel.findById(id);
     if (!interviewData) return Response.json(
