@@ -27,11 +27,10 @@ export async function POST(req, res) {
 }
 
 
-export async function GET({ params, headers }) {
+export async function GET(req) {
   await dbConnect();
   try {
-    await headers();
-    const { userId } = auth()
+    const { userId } = auth();
     const user = await currentUser();
     const email = user.emailAddresses[0]?.emailAddress;
     console.log(email);
